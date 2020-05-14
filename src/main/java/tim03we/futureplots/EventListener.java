@@ -16,7 +16,9 @@ package tim03we.futureplots;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.level.Location;
+import cn.nukkit.player.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.BlockBreakEvent;
@@ -57,10 +59,12 @@ public class EventListener extends Language implements Listener {
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        Block block = event.getBlock();
+        Location blockPos = Location.from(block.getPosition(), block.getLevel());
         if(Settings.levels.contains(player.getLevel().getName())) {
             if(!player.isOp()) {
-                if(FuturePlots.getInstance().isPlot(event.getBlock().getLocation())) {
-                    if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation())) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation()))) {
+                if(FuturePlots.getInstance().isPlot(blockPos)) {
+                    if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos)) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos))) {
                         event.setCancelled(true);
                     }
                 } else {
@@ -73,10 +77,12 @@ public class EventListener extends Language implements Listener {
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
+        Block block = event.getBlock();
+        Location blockPos = Location.from(block.getPosition(), block.getLevel());
         if(Settings.levels.contains(player.getLevel().getName())) {
             if(!player.isOp()) {
-                if(FuturePlots.getInstance().isPlot(event.getBlock().getLocation())) {
-                    if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation())) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation()))) {
+                if(FuturePlots.getInstance().isPlot(blockPos)) {
+                    if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos)) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos))) {
                         event.setCancelled(true);
                     }
                 } else {
@@ -90,11 +96,13 @@ public class EventListener extends Language implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if(Settings.levels.contains(player.getLevel().getName())) {
+            Block block = event.getBlock();
+            Location blockPos = Location.from(block.getPosition(), block.getLevel());
             if(!player.isOp()) {
                 if(event.getItem() instanceof ItemEdible) {
                     if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.getAction() == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-                        if(FuturePlots.getInstance().isPlot(event.getBlock().getLocation())) {
-                            if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation())) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation()))) {
+                        if(FuturePlots.getInstance().isPlot(blockPos)) {
+                            if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos)) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos))) {
                                 event.setCancelled(true);
                                 return;
                             }
@@ -104,8 +112,8 @@ public class EventListener extends Language implements Listener {
                         }
                     }
                 }
-                if(FuturePlots.getInstance().isPlot(event.getBlock().getLocation())) {
-                    if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation())) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(event.getBlock().getLocation()))) {
+                if(FuturePlots.getInstance().isPlot(blockPos)) {
+                    if(!FuturePlots.provider.isOwner(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos)) && !FuturePlots.provider.isHelper(player.getName(), FuturePlots.getInstance().getPlotByPosition(blockPos))) {
                         event.setCancelled(true);
                     }
                 } else {

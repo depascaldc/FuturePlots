@@ -17,13 +17,16 @@ package tim03we.futureplots.tasks;
  */
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockIds;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.level.Location;
 import cn.nukkit.scheduler.Task;
+import com.nukkitx.math.vector.Vector3i;
 import tim03we.futureplots.FuturePlots;
+import tim03we.futureplots.utils.Language;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
+import tim03we.futureplots.utils.PlotVector3i;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -32,13 +35,15 @@ public class PlotSetBorderTask extends Task {
     private Level level;
     private int height;
     private Block plotWallBlock;
-    private Position plotBeginPos;
+    private PlotVector3i plotBeginPos;
     private double xMax, zMax;
+    //private $plot, $level, $height, $plotWallBlock, $plotBeginPos, $xMax, $zMax;
 
-    public PlotSetBorderTask(Plot plot, Block block) {
-        this.plotBeginPos = FuturePlots.getInstance().getPlotPosition(plot);
-        this.level = plotBeginPos.getLevel();
-        this.plotBeginPos = plotBeginPos.subtract(1,0,1);
+    public PlotSetBorderTask (Plot plot, Block block) {
+        Location plotPos = FuturePlots.getInstance().getPlotPosition(plot);
+        this.level = plotPos.getLevel();
+        this.plotBeginPos = new PlotVector3i((int) plotPos.getX(), (int) plotPos.getY(), (int) plotPos.getZ()).subtract(1, 0, 1);//$plotBeginPos.subtract(1,0,1);
+        //$plotLevel = $plugin->getLevelSettings($plot->levelName);
         int plotSize = new PlotSettings(level.getName()).getPlotSize();
         this.xMax = plotBeginPos.x + plotSize + 1;
         this.zMax = plotBeginPos.z + plotSize + 1;
@@ -54,16 +59,18 @@ public class PlotSetBorderTask extends Task {
                 double z;
 
                 for (x = plotBeginPos.x; x <= xMax; x++) {
-                    level.setBlock(new Vector3(x, height + 1, plotBeginPos.z), plotWallBlock);
-                    level.setBlock(new Vector3(x, height + 1, zMax), plotWallBlock);
+                    level.setBlock(Vector3i.from(x, height + 1, plotBeginPos.z), plotWallBlock);
+                    level.setBlock(Vector3i.from(x, height + 1, zMax), plotWallBlock);
                 }
                 for (z = plotBeginPos.z; z <= zMax; z++) {
-                    level.setBlock(new Vector3(plotBeginPos.x, height + 1, z), plotWallBlock);
-                    level.setBlock(new Vector3(xMax, height + 1, z), plotWallBlock);
+                    level.setBlock(Vector3i.from(plotBeginPos.x, height + 1, z), plotWallBlock);
+                    level.setBlock(Vector3i.from(xMax, height + 1, z), plotWallBlock);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
+
     }
+
 }

@@ -16,9 +16,9 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.level.Position;
+import cn.nukkit.level.Location;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
@@ -46,10 +46,13 @@ public class AutoCommand extends BaseCommand {
                             return;
                         }
                     }
-                    Plot plot = FuturePlots.provider.getNextFreePlot(FuturePlots.getInstance().getPlotByPosition(((Player) sender).getPosition()));
+                    Plot plot = FuturePlots.provider.getNextFreePlot(FuturePlots.getInstance().getPlotByPosition(((Player) sender).getLocation()));
                     FuturePlots.provider.claimPlot(sender.getName(), plot);
-                    Position pos = FuturePlots.getInstance().getPlotPosition(plot);
-                    ((Player) sender).teleport(new Position(pos.x += Math.floor(plotSize / 2), pos.y += 1.5, pos.z -= 1,  pos.getLevel()));
+                    Location pos = FuturePlots.getInstance().getPlotPosition(plot);
+                    float x = pos.getX();
+                    float y = pos.getY();
+                    float z = pos.getZ();
+                    ((Player) sender).teleport(Location.from(x += Math.floor(plotSize / 2), y += 1.5, z -= 1,  pos.getLevel()));
                     sender.sendMessage(translate(true, "plot.claim"));
                 } else {
                     sender.sendMessage(translate(true, "plot.max"));

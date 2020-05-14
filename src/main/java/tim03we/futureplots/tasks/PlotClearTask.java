@@ -16,15 +16,14 @@ package tim03we.futureplots.tasks;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.level.Location;
 import cn.nukkit.scheduler.Task;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.PlotSettings;
+import tim03we.futureplots.utils.PlotVector3i;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -36,22 +35,22 @@ public class PlotClearTask extends Task {
     private Block bottomBlock;
     private Block plotFillBlock;
     private Block plotFloorBlock;
-    private Position plotBeginPos;
+    private Location plotBeginPos;
     private int xMax;
     private int zMax;
-    private Vector3 pos;
+    private PlotVector3i pos;
 
     public PlotClearTask(Plot plot) {
         this.plotBeginPos = FuturePlots.getInstance().getPlotPosition(plot);
         this.level = plotBeginPos.getLevel();
         this.plotSize = new PlotSettings(plot.getLevelName()).getPlotSize();
-        this.xMax = (int) (plotBeginPos.x + plotSize);
-        this.zMax = (int) (plotBeginPos.z + plotSize);
+        this.xMax = (int) (plotBeginPos.getX() + plotSize);
+        this.zMax = (int) (plotBeginPos.getZ() + plotSize);
         this.height = new PlotSettings(plot.getLevelName()).getGroundHeight();
         this.bottomBlock = new PlotSettings(plot.getLevelName()).getBottomBlock();
         this.plotFillBlock = new PlotSettings(plot.getLevelName()).getPlotFillBlock();
         this.plotFloorBlock = new PlotSettings(plot.getLevelName()).getPlotFloorBlock();
-        this.pos = new Position(plotBeginPos.x, 0, plotBeginPos.z, Server.getInstance().getLevelByName(plot.getLevelName()));
+        this.pos = new PlotVector3i(plotBeginPos.getFloorX(), 0, plotBeginPos.getFloorZ());
     }
 
     @Override
@@ -71,13 +70,13 @@ public class PlotClearTask extends Task {
                             } else {
                                 block = Block.get(0);
                             }
-                            level.setBlock(pos, block);
+                            level.setBlock(pos.toVector3i(), block);
                             pos.y++;
                         }
                         pos.y = 0;
                         pos.z++;
                     }
-                    pos.z = plotBeginPos.z;
+                    pos.z = plotBeginPos.getFloorZ();
                     pos.x++;
                 }
             } catch (Exception ex) {

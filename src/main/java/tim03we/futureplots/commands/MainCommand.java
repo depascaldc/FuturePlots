@@ -17,13 +17,18 @@ package tim03we.futureplots.commands;
  */
 
 import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandFactory;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.PluginCommand;
+import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.handler.CommandHandler;
 
-public class MainCommand extends Command {
+public class MainCommand extends PluginCommand<FuturePlots> implements CommandFactory {
 
     public MainCommand() {
-        super("plot", "FuturePlots Command", "/plots <sub-command>");
+        super("plot", FuturePlots.getInstance());
+        setDescription("FuturePlots Command");
+        setUsage("/plots <sub-command>");
         setAliases(new String[]{"plots", "p"});
     }
 
@@ -44,5 +49,10 @@ public class MainCommand extends Command {
             sender.sendMessage(getUsage());
         }
         return false;
+    }
+
+    @Override
+    public Command create(String s) {
+        return this;
     }
 }

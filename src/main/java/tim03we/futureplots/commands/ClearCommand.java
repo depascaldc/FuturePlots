@@ -16,7 +16,7 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.command.CommandSender;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.PlotPlayer;
@@ -41,7 +41,7 @@ public class ClearCommand extends BaseCommand {
                         return;
                     }
                 }
-                FuturePlots.getInstance().clearPlot(FuturePlots.getInstance().getPlotByPosition(((Player) sender).getPosition()));
+                FuturePlots.getInstance().clearPlot(FuturePlots.getInstance().getPlotByPosition(((Player) sender).getLocation()));
                 sender.sendMessage(translate(true, "plot.clear"));
             }
         }

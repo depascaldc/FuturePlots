@@ -24,13 +24,13 @@ economy: false
 # how the plot world should look like later, when the world is generated for the first time
 default-settings:
   plotSize: 32
-  roadBlock: "5:0"
+  roadBlock: "planks:0"
   wall:
-    unclaimed: "44:0"
-    claimed: "44:1"
-  bottomBlock: "7:0"
-  plotFloorBlock: "2:0"
-  plotFillBlock: "3:0"
+    unclaimed: "stone_slab:0"
+    claimed: "stone_slab:1"
+  bottomBlock: "bedrock:0"
+  plotFloorBlock: "grass:0"
+  plotFillBlock: "stone:0"
   roadWidth: 7
   groundHeight: 64
   price:

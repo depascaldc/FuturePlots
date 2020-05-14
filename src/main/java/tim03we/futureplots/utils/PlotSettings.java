@@ -20,6 +20,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.Identifier;
 import tim03we.futureplots.FuturePlots;
 
 public class PlotSettings {
@@ -40,17 +41,17 @@ public class PlotSettings {
 
     public Block getWallBlockClaimed() {
         String[] ex = getConfig().getString("settings.wall.claimed").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+        return Block.get(Identifier.fromString(ex[0]), Integer.parseInt(ex[1]));
     }
 
     public Block getWallBlockUnClaimed() {
         String[] ex = getConfig().getString("settings.wall.unclaimed").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+        return Block.get(Identifier.fromString(ex[0]), Integer.parseInt(ex[1]));
     }
 
     public Block getRoadBlock() {
         String[] ex = getConfig().getString("settings.roadBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+        return Block.get(Identifier.fromString(ex[0]), Integer.parseInt(ex[1]));
     }
 
     public int getRoadWidth() {
@@ -67,17 +68,17 @@ public class PlotSettings {
 
     public Block getBottomBlock() {
         String[] ex = getConfig().getString("settings.bottomBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+        return Block.get(Identifier.fromString(ex[0]), Integer.parseInt(ex[1]));
     }
 
     public Block getPlotFloorBlock() {
         String[] ex = getConfig().getString("settings.plotFloorBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+        return Block.get(Identifier.fromString(ex[0]), Integer.parseInt(ex[1]));
     }
 
     public Block getPlotFillBlock() {
         String[] ex = getConfig().getString("settings.plotFillBlock").split(":");
-        return Block.get(Integer.parseInt(ex[0]), Integer.parseInt(ex[1]));
+        return Block.get(Identifier.fromString(ex[0]), Integer.parseInt(ex[1]));
     }
 
     public int getClaimPrice() {

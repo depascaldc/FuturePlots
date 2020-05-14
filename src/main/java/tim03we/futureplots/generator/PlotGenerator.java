@@ -16,182 +16,103 @@ package tim03we.futureplots.generator;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.impl.plains.PlainsBiome;
-import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.chunk.IChunk;
 import cn.nukkit.level.generator.Generator;
-import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.plugin.Plugin;
-import tim03we.futureplots.FuturePlots;
+import cn.nukkit.level.generator.GeneratorFactory;
+import net.daporkchop.lib.random.PRandom;
 import tim03we.futureplots.utils.PlotSettings;
 
-import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 
-public class PlotGenerator extends Generator {
+public class PlotGenerator implements Generator, GeneratorFactory {
 
-    private Map<String, Object> options;
-    protected Level level;
-    protected Block roadBlock;
-    protected Block bottomBlock;
-    protected Block plotFillBlock;
-    protected Block plotFloorBlock;
-    protected Block wallBlock;
-    protected int roadWidth;
-    protected int groundHeight;
-    protected int plotSize;
-    static int PLOT = 0;
-    static int ROAD = 1;
-    static int WALL = 2;
-
-    private final String NAME = "futureplots";
-    private ChunkManager chunkManager;
-
-
-    public PlotGenerator(Map<String, Object> options) {
-        this.options = options;
-        try {
-            level = Server.getInstance().getLevelByName((String) options.get("preset"));
-            roadBlock = new PlotSettings((String) options.get("preset")).getRoadBlock();
-            wallBlock = new PlotSettings((String) options.get("preset")).getWallBlockUnClaimed();
-            plotFloorBlock = new PlotSettings((String) options.get("preset")).getPlotFloorBlock();
-            plotFillBlock = new PlotSettings((String) options.get("preset")).getPlotFillBlock();
-            bottomBlock = new PlotSettings((String) options.get("preset")).getBottomBlock();
-            roadWidth = new PlotSettings((String) options.get("preset")).getRoadWidth();
-            plotSize = new PlotSettings((String) options.get("preset")).getPlotSize();
-            groundHeight = new PlotSettings((String) options.get("preset")).getGroundHeight();
-        } catch (ArrayIndexOutOfBoundsException | NullPointerException | NumberFormatException e) {
-            Server.getInstance().getLogger().critical("Your world configuration " + options.get("preset") + ".yml is incorrect, check it or the server will not start properly. An example of the config, if it does not match your previous one, can be found at \"https://github.com/tim03we/FuturePlots/wiki/World-Config-Example\".");
-            Server.getInstance().shutdown();
-        }
-    }
+    public final int PLOT = 0;
+    public final int ROAD = 1;
+    public final int WALL = 2;
 
     @Override
-    public int getId() {
-        return 1;
-    }
+    public void generate(PRandom pRandom, IChunk iChunk, int chunkX, int chunkZ) {
+        IChunk chunk = iChunk;
+        HashMap<Integer, Integer> shape = getShape(chunkX << 4, chunkZ << 4, chunk);
 
-    @Override
-    public void init(ChunkManager chunkManager, NukkitRandom nukkitRandom) {
-        this.chunkManager = chunkManager;
-    }
-
-    @Override
-    public void generateChunk(int chunkX, int chunkZ) {
-        HashMap<Integer, Integer> shape = getShape(chunkX << 4, chunkZ << 4);
-        level.loadChunk(chunkX << 4, chunkZ << 4);
-        BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
-        int bottomBlockId = bottomBlock.getId();
-        int bottomBlockMeta = bottomBlock.getDamage();
-        int plotFillBlockId = plotFillBlock.getId();
-        int plotFillBlockMeta = plotFillBlock.getDamage();
-        int plotFloorBlockId = plotFloorBlock.getId();
-        int plotFloorBlockMeta = plotFloorBlock.getDamage();
-        int roadBlockId = roadBlock.getId();
-        int roadBlockMeta = roadBlock.getDamage();
-        int wallBlockId = wallBlock.getId();
-        int wallBlockMeta = wallBlock.getDamage();
-        int groundH = groundHeight;
+        Block roadBlock = new PlotSettings(chunk.getLevel().getName()).getRoadBlock();
+        Block bottomBlock = new PlotSettings(chunk.getLevel().getName()).getBottomBlock();
+        Block plotFillBlock = new PlotSettings(chunk.getLevel().getName()).getPlotFillBlock();
+        Block plotFloorBlock = new PlotSettings(chunk.getLevel().getName()).getPlotFloorBlock();
+        Block wallBlock = new PlotSettings(chunk.getLevel().getName()).getWallBlockUnClaimed();
+        int groundHeight = new PlotSettings(chunk.getLevel().getName()).getGroundHeight();
         for (int Z = 0; Z < 16; ++Z) {
-            for(int X = 0; X < 16; ++X) {
-                chunk.setBiome(X, Z, new PlainsBiome());
-                chunk.setBlock(X, 0, Z, bottomBlockId, bottomBlockMeta);
-                for(int y = 1; y < groundH; ++y) {
-                    chunk.setBlock(X, y, Z, plotFillBlockId, plotFillBlockMeta);
+            for (int X = 0; X < 16; ++X) {
+                chunk.setBlock(X, 0, Z, bottomBlock);
+                for (int y = 1; y < groundHeight; ++y) {
+                    chunk.setBlock(X, y, Z, plotFillBlock);
                 }
                 int type = shape.get((Z << 4) | X);
-                if(type == PLOT) {
-                    chunk.setBlock(X, groundH, Z, plotFloorBlockId, plotFloorBlockMeta);
-                } else if(type == ROAD) {
-                    chunk.setBlock(X, groundH, Z, roadBlockId, roadBlockMeta);
+                if (type == PLOT) {
+                    chunk.setBlock(X, groundHeight, Z, plotFloorBlock);
+                } else if (type == ROAD) {
+                    chunk.setBlock(X, groundHeight, Z, roadBlock);
                 } else {
-                    chunk.setBlock(X, groundH, Z, roadBlockId, roadBlockMeta);
-                    chunk.setBlock(X, groundH + 1, Z, wallBlockId, wallBlockMeta);
+                    chunk.setBlock(X, groundHeight, Z,roadBlock);
+                    chunk.setBlock(X, groundHeight + 1, Z, wallBlock);
                 }
             }
         }
-        chunk.setX(chunkX);
-        chunk.setZ(chunkZ);
-        chunk.setGenerated();
-        level.setChunk(chunkX, chunkZ, chunk);
     }
 
     @Override
-    public void populateChunk(int i, int i1) {
-    }
+    public void populate(PRandom pRandom, ChunkManager chunkManager, int i, int i1) { }
 
-    @Override
-    public Map<String, Object> getSettings() {
-        return this.options;
-    }
-
-    @Override
-    public String getName() {
-        return "futureplots";
-    }
-
-    @Override
-    public Vector3 getSpawn() {
-        return new Vector3(0, groundHeight + 1, 0);
-    }
-
-    @Override
-    public ChunkManager getChunkManager() {
-        return chunkManager;
-    }
-
-    public HashMap<Integer, Integer> getShape(int x, int z) {
+    public HashMap<Integer, Integer> getShape(int x, int z, IChunk chunk) {
+        int roadWidth = new PlotSettings(chunk.getLevel().getName()).getRoadWidth();
+        int plotSize = new PlotSettings(chunk.getLevel().getName()).getPlotSize();
         int totalSize = plotSize + roadWidth;
         int X;
         int Z;
-        if(x >= 0) {
+        int typeZ;
+        int typeX;
+        int type;
+        if (x >= 0) {
             X = x % totalSize;
         } else {
             X = totalSize - Math.abs(x % totalSize);
         }
-        if(z >= 0) {
+        if (z >= 0) {
             Z = z % totalSize;
         } else {
             Z = totalSize - Math.abs(z % totalSize);
         }
-        HashMap<Integer, Integer> shape = new HashMap<>();
-        int typeZ;
-        int typeX;
-        int type;
         int startX = X;
+        HashMap<Integer, Integer> shape = new HashMap<>();
         for (z = 0; z < 16; z++, Z++) {
-            if(Z == totalSize) {
+            if (Z == totalSize) {
                 Z = 0;
             }
-            if(Z < plotSize) {
+            if (Z < plotSize) {
                 typeZ = PLOT;
-            } else if(Z == plotSize || Z == (totalSize - 1)) {
+            } else if (Z == plotSize || Z == (totalSize - 1)) {
                 typeZ = WALL;
             } else {
                 typeZ = ROAD;
             }
             for (x = 0, X = startX; x < 16; x++, X++) {
-                if(X == totalSize) {
+                if (X == totalSize) {
                     X = 0;
                 }
-                if(X < plotSize) {
+                if (X < plotSize) {
                     typeX = PLOT;
-                } else if(X == plotSize || X == (totalSize - 1)) {
+                } else if (X == plotSize || X == (totalSize - 1)) {
                     typeX = WALL;
                 } else {
                     typeX = ROAD;
                 }
-                if(typeX == typeZ) {
+                if (typeX == typeZ) {
                     type = typeX;
-                } else if(typeX == PLOT) {
+                } else if (typeX == PLOT) {
                     type = typeZ;
-                } else if(typeZ == PLOT) {
+                } else if (typeZ == PLOT) {
                     type = typeX;
                 } else {
                     type = ROAD;
@@ -200,5 +121,15 @@ public class PlotGenerator extends Generator {
             }
         }
         return shape;
+    }
+
+    @Override
+    public void finish(PRandom pRandom, ChunkManager chunkManager, int i, int i1) {
+
+    }
+
+    @Override
+    public Generator create(long l, String s) {
+        return this;
     }
 }

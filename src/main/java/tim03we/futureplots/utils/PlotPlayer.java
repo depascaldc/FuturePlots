@@ -16,7 +16,7 @@ package tim03we.futureplots.utils;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import tim03we.futureplots.FuturePlots;
 
 public class PlotPlayer {
@@ -33,11 +33,11 @@ public class PlotPlayer {
     }
 
     public boolean onPlot() {
-        return FuturePlots.getInstance().getPlotByPosition(player.getPosition()) != null;
+        return FuturePlots.getInstance().getPlotByPosition(player.getLocation()) != null;
     }
 
     public Plot getPlot() {
-        return FuturePlots.getInstance().getPlotByPosition(player.getPosition());
+        return FuturePlots.getInstance().getPlotByPosition(player.getLocation());
     }
 
     public boolean isOwner() {

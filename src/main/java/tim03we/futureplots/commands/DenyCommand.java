@@ -16,7 +16,7 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.command.CommandSender;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
@@ -32,7 +32,7 @@ public class DenyCommand extends BaseCommand {
     public void execute(CommandSender sender, String command, String[] args) {
         if(sender instanceof Player) {
             if(new PlotPlayer((Player) sender).onPlot()) {
-                Plot plot = FuturePlots.getInstance().getPlotByPosition(((Player) sender).getPosition());
+                Plot plot = FuturePlots.getInstance().getPlotByPosition(((Player) sender).getLocation());
                 if(FuturePlots.provider.isOwner(sender.getName(), plot)) {
                     if (args.length > 1) {
                         if (!FuturePlots.provider.isDenied(args[1], plot)) {

@@ -28,7 +28,7 @@ public class CommandHandler {
     public static HashMap<String, BaseCommand> aliases = new HashMap<>();
 
     public CommandHandler() {
-        FuturePlots.getInstance().getServer().getCommandMap().register("plots", new MainCommand());
+        FuturePlots.getInstance().getServer().getCommandRegistry().register(FuturePlots.getInstance(), "plot", new MainCommand());
     }
 
     public void registerCommand(String name, BaseCommand command, String[] ali) {

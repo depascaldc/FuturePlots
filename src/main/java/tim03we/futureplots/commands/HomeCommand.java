@@ -16,9 +16,9 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.level.Position;
+import cn.nukkit.level.Location;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
 import tim03we.futureplots.utils.Settings;
@@ -47,7 +47,7 @@ public class HomeCommand extends BaseCommand {
                     return;
                 }
             } catch (IndexOutOfBoundsException e) { sender.sendMessage(translate(true, "has.no.plot.number", args[1])); return; }
-            Position plotPos;
+            Location plotPos;
             if(Settings.levels.size() > 1) {
                 if(args.length > 2) {
                     if(!new World(args[2]).exists()) {

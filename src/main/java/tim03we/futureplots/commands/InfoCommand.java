@@ -16,7 +16,7 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.command.CommandSender;
 import tim03we.futureplots.FuturePlots;
 import tim03we.futureplots.utils.Plot;
@@ -32,7 +32,7 @@ public class InfoCommand extends BaseCommand {
     public void execute(CommandSender sender, String command, String[] args) {
         if(sender instanceof Player) {
             if(new PlotPlayer((Player) sender).onPlot()) {
-                Plot plot = FuturePlots.getInstance().getPlotByPosition(((Player) sender).getPosition());
+                Plot plot = FuturePlots.getInstance().getPlotByPosition(((Player) sender).getLocation());
                 sender.sendMessage(translate(false, "plot.info.title"));
                 if(FuturePlots.provider.hasOwner(plot)) {
                     sender.sendMessage(translate(false, "plot.info.text", FuturePlots.provider.getPlotName(plot), plot.getX() + ";" + plot.getZ(), FuturePlots.provider.getHelpers(plot), FuturePlots.provider.getDenied(plot)));

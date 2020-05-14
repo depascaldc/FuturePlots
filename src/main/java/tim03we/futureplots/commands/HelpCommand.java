@@ -16,7 +16,9 @@ package tim03we.futureplots.commands;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.player.Player;
 import tim03we.futureplots.handler.CommandHandler;
 
 public class HelpCommand extends BaseCommand {
@@ -28,6 +30,9 @@ public class HelpCommand extends BaseCommand {
     @Override
     public void execute(CommandSender sender, String command, String[] args) {
         sender.sendMessage(translate(false, "plot.help.title"));
+        if(sender instanceof Player) {
+            ((Player) sender).teleport(Server.getInstance().getLevelByName("plotwelt").getSafeSpawn());
+        }
         for (String cmd : CommandHandler.commmands.keySet()) {
             sender.sendMessage(translate(false, "plot.help.text", cmd));
         }

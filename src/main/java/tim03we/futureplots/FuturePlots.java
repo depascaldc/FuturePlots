@@ -16,11 +16,14 @@ package tim03we.futureplots;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import cn.nukkit.Player;
+import cn.nukkit.block.BlockIds;
+import cn.nukkit.level.generator.impl.FlatGenerator;
+import cn.nukkit.player.Player;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.utils.Identifier;
 import tim03we.futureplots.commands.*;
 import tim03we.futureplots.generator.PlotGenerator;
 import tim03we.futureplots.handler.CommandHandler;
@@ -53,12 +56,12 @@ public class FuturePlots extends PluginBase {
         saveDefaultConfig();
         providerClass.put("yaml", YamlProvider.class);
         registerGenerator();
+        registerCommands();
     }
 
     @Override
     public void onEnable() {
         new File(getDataFolder() + "/worlds/").mkdirs();
-        registerCommands();
         getServer().getPluginManager().registerEvents(new EventListener(), this);
         Settings.init();
         Language.init();
@@ -71,14 +74,14 @@ public class FuturePlots extends PluginBase {
         if(!Language.getNoPrefix("version").equals("1.1.0")) {
             new File(getDataFolder() + "/lang/" + Settings.language + "_old.yml").delete();
             if(new File(getDataFolder() + "/lang/" + Settings.language + ".yml").renameTo(new File(getDataFolder() + "/lang/" + Settings.language + "_old.yml"))) {
-                getLogger().critical("The version of the language configuration does not match. You will find the old file marked \"" + Settings.language + "_old.yml\" in the same language directory.");
+                getLogger().error("The version of the language configuration does not match. You will find the old file marked \"" + Settings.language + "_old.yml\" in the same language directory.");
                 Language.init();
             }
         }
         if(!getConfig().getString("version").equals("1.1.0")) {
             new File(getDataFolder() + "/config_old.yml").delete();
             if(new File(getDataFolder() + "/config.yml").renameTo(new File(getDataFolder() + "/config_old.yml"))) {
-                getLogger().critical("The version of the configuration does not match. You will find the old file marked \"config_old.yml\" in the same directory.");
+                getLogger().error("The version of the configuration does not match. You will find the old file marked \"config_old.yml\" in the same directory.");
                 saveDefaultConfig();
             }
         }
@@ -91,9 +94,9 @@ public class FuturePlots extends PluginBase {
 
     private void initProvider() {
         Class<?> providerClass = this.providerClass.get((this.getConfig().get(Settings.provider, "yaml")).toLowerCase());
-        if (providerClass == null) { this.getLogger().critical("The specified provider could not be found."); }
+        if (providerClass == null) { this.getLogger().error("The specified provider could not be found."); }
         try { this.provider = (DataProvider) providerClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) { this.getLogger().critical("The specified provider could not be found.");
+        } catch (InstantiationException | IllegalAccessException e) { this.getLogger().error("The specified provider could not be found.");
             getServer().getPluginManager().disablePlugin(getServer().getPluginManager().getPlugin("FuturePlots"));
             return;
         }
@@ -101,16 +104,16 @@ public class FuturePlots extends PluginBase {
             try {
                 if(getServer().getPluginManager().getPlugin("EconomyAPI") != null) {
                     economyProvider = EconomySProvider.class.newInstance();
-                    getLogger().warning("Economy provider was set to EconomyS.");
+                    getLogger().error("Economy provider was set to EconomyS.");
                 } else {
                     Settings.economy = false;
-                    getLogger().critical("A Economy provider could not be found.");
-                    getLogger().critical("The Economy function has been deactivated.");
+                    getLogger().error("A Economy provider could not be found.");
+                    getLogger().error("The Economy function has been deactivated.");
                 }
             } catch (InstantiationException | IllegalAccessException e) {
                 Settings.economy = false;
-                getLogger().critical("A Economy provider could not be found.");
-                getLogger().critical("The Economy function has been deactivated.");
+                getLogger().error("A Economy provider could not be found.");
+                getLogger().error("The Economy function has been deactivated.");
             }
         }
     }
@@ -143,13 +146,13 @@ public class FuturePlots extends PluginBase {
 
 
     private void registerGenerator() {
-        Generator.addGenerator(PlotGenerator.class, "futureplots", Generator.TYPE_INFINITE);
+        FuturePlots.getInstance().getServer().getGeneratorRegistry().register(Identifier.fromString("futureplots:default"), new PlotGenerator(), 0);
     }
 
     private void loadWorlds() {
         for (String world : Settings.levels) {
             new PlotSettings(world).initWorld();
-            getServer().loadLevel(world);
+            //getServer().loadLevel(world);
         }
     }
 
@@ -158,10 +161,11 @@ public class FuturePlots extends PluginBase {
         new PlotSettings(levelName).initWorld();
         Map<String, Object> options = new HashMap<>();
         options.put("preset", levelName);
-        getServer().generateLevel(levelName, 0, Generator.getGenerator("futureplots"), options);
+        /* Dont work at this moment */
+        //getServer().generateLevel(levelName, 0, Generator.getGenerator("futureplots"), options);
     }
 
-    public boolean isPlot(Position position) {
+    public boolean isPlot(Location position) {
         return getPlotByPosition(position) != null;
     }
 
@@ -191,30 +195,30 @@ public class FuturePlots extends PluginBase {
         return max_plots;
     }
 
-    public Position getPlotPosition(Plot plot) {
+    public Location getPlotPosition(Plot plot) {
         int plotSize = new PlotSettings(plot.getLevelName()).getPlotSize();
         int roadWidth = new PlotSettings(plot.getLevelName()).getRoadWidth();
         int totalSize = plotSize + roadWidth;
         int x = totalSize * plot.getX();
         int z = totalSize * plot.getZ();
         Level level = getServer().getLevelByName(plot.getLevelName());
-        return new Position(x, Settings.groundHeight, z, level);
+        return Location.from(x, Settings.groundHeight, z, level);
     }
 
-    public Position getPlotBorderPosition(Plot plot) {
+    public Location getPlotBorderPosition(Plot plot) {
         int plotSize = new PlotSettings(plot.getLevelName()).getPlotSize();
         int roadWidth = new PlotSettings(plot.getLevelName()).getRoadWidth();
         int totalSize = plotSize + roadWidth;
         int x = totalSize * plot.getX();
         int z = totalSize * plot.getZ();
         Level level = getServer().getLevelByName(plot.getLevelName());
-        return new Position(x += Math.floor(new PlotSettings(plot.getLevelName()).getPlotSize() / 2), Settings.groundHeight += 1.5, z -= 1, level);
+        return Location.from(x += Math.floor(new PlotSettings(plot.getLevelName()).getPlotSize() / 2), Settings.groundHeight += 1.5, z -= 1, level);
     }
 
 
-    public Plot getPlotByPosition(Position position) {
-        double x = position.x;
-        double z = position.z;
+    public Plot getPlotByPosition(Location position) {
+        double x = position.getX();
+        double z = position.getZ();
         int X;
         int Z;
         double difX;

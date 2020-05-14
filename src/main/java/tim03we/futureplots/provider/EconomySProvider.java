@@ -16,17 +16,18 @@ package tim03we.futureplots.provider;
  * <https://opensource.org/licenses/GPL-3.0>.
  */
 
-import me.onebone.economyapi.EconomyAPI;
+//import me.onebone.economyapi.EconomyAPI;
 
 public class EconomySProvider implements EconomyProvider {
 
     @Override
     public void reduceMoney(String username, double amount) {
-        EconomyAPI.getInstance().reduceMoney(username, amount);
+        //EconomyAPI.getInstance().reduceMoney(username, amount);
     }
 
     @Override
     public double getMoney(String username) {
-        return EconomyAPI.getInstance().myMoney(username);
+        //return EconomyAPI.getInstance().myMoney(username);
+        return 0.0;
     }
 }
