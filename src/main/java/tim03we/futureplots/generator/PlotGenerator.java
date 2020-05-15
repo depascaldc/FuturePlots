@@ -36,13 +36,13 @@ public class PlotGenerator implements Generator, GeneratorFactory {
     public void generate(PRandom pRandom, IChunk iChunk, int chunkX, int chunkZ) {
         IChunk chunk = iChunk;
         HashMap<Integer, Integer> shape = getShape(chunkX << 4, chunkZ << 4, chunk);
-
-        Block roadBlock = new PlotSettings(chunk.getLevel().getName()).getRoadBlock();
-        Block bottomBlock = new PlotSettings(chunk.getLevel().getName()).getBottomBlock();
-        Block plotFillBlock = new PlotSettings(chunk.getLevel().getName()).getPlotFillBlock();
-        Block plotFloorBlock = new PlotSettings(chunk.getLevel().getName()).getPlotFloorBlock();
-        Block wallBlock = new PlotSettings(chunk.getLevel().getName()).getWallBlockUnClaimed();
-        int groundHeight = new PlotSettings(chunk.getLevel().getName()).getGroundHeight();
+        PlotSettings plotSettings = new PlotSettings(chunk.getLevel().getName());
+        Block roadBlock = plotSettings.getRoadBlock();
+        Block bottomBlock = plotSettings.getBottomBlock();
+        Block plotFillBlock = plotSettings.getPlotFillBlock();
+        Block plotFloorBlock = plotSettings.getPlotFloorBlock();
+        Block wallBlock = plotSettings.getWallBlockUnClaimed();
+        int groundHeight = plotSettings.getGroundHeight();
         for (int Z = 0; Z < 16; ++Z) {
             for (int X = 0; X < 16; ++X) {
                 chunk.setBlock(X, 0, Z, bottomBlock);
@@ -66,8 +66,9 @@ public class PlotGenerator implements Generator, GeneratorFactory {
     public void populate(PRandom pRandom, ChunkManager chunkManager, int i, int i1) { }
 
     public HashMap<Integer, Integer> getShape(int x, int z, IChunk chunk) {
-        int roadWidth = new PlotSettings(chunk.getLevel().getName()).getRoadWidth();
-        int plotSize = new PlotSettings(chunk.getLevel().getName()).getPlotSize();
+        PlotSettings plotSettings = new PlotSettings(chunk.getLevel().getName());
+        int roadWidth = plotSettings.getRoadWidth();
+        int plotSize = plotSettings.getPlotSize();
         int totalSize = plotSize + roadWidth;
         int X;
         int Z;
